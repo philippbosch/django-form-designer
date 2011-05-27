@@ -8,7 +8,7 @@
 {% endif %}
 
 
-<form name="{{ form_definition.name }}" action="{% if form_definition.action %}{{ form_definition.action }}{% else %}.{% endif %}" method="{{ form_definition.method }}">
+<form name="{{ form_definition.name }}" action="{% if form_definition.action %}{{ form_definition.action }}{% else %}.{% endif %}" method="{{ form_definition.method }}" enctype="multipart/form-data">
 {% csrf_token %}
 <fieldset>	
 	{% if form_definition.title %}

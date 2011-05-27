@@ -1,3 +1,8 @@
+import random
+from datetime import datetime
+from os import path
+from os import mkdir
+
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
@@ -18,14 +23,34 @@ def process_form(request, form_definition, context={}, is_cms_plugin=False):
     is_submit = False
     # If the form has been submitted...
     if request.method == 'POST' and request.POST.get(form_definition.submit_flag_name):
-        form = DesignedForm(form_definition, None, request.POST)
+        form = DesignedForm(form_definition, None, request.POST, request.FILES)
         is_submit = True
     if request.method == 'GET' and request.GET.get(form_definition.submit_flag_name):
-        form = DesignedForm(form_definition, None, request.GET)
+        form = DesignedForm(form_definition, None, request.GET, request.FILES)
         is_submit = True
 
     if is_submit:
         if form.is_valid():
+            # Handle file uploads
+            files = []
+            if hasattr(request, 'FILES'):
+                for file_key in request.FILES:
+                    file_obj = request.FILES[file_key]
+                    file_name = '%s.%s_%s' % (
+                        datetime.now().strftime('%Y%m%d'),
+                        random.randrange(0, 10000),
+                        file_obj.name,
+                    )
+                    if not os.path.exists(join(settings.MEDIA_ROOT, 'form_uploads')):
+                        os.mkdir(join(settings.MEDIA_ROOT, 'form_uploads'))
+                    destination = open(join(settings.MEDIA_ROOT, 'form_uploads', file_name), 'wb+')
+
+                    for chunk in file_obj.chunks():
+                        destination.write(chunk)
+                    destination.close()
+                    form.cleaned_data[file_key] = path.join(settings.MEDIA_URL, 'form_uploads', file_name)
+                    files.append(path.join(settings.MEDIA_ROOT, 'form_uploads', file_name))
+
             # Successful submission
             messages.success(request, success_message)
             message = success_message
