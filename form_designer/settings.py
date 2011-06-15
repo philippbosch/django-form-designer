@@ -18,6 +18,7 @@ FIELD_CLASSES = getattr(settings, 'FORM_DESIGNER_FIELD_CLASSES', (
     ('django.forms.ModelChoiceField', _('Model Choice')),
     ('django.forms.ModelMultipleChoiceField', _('Model Multiple Choice')),
     ('django.forms.RegexField', _('Regex')),
+    ('django.forms.FileField', _('File')),
     # ('captcha.fields.CaptchaField', _('Captcha')),
 ))
 
