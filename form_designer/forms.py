@@ -21,7 +21,10 @@ class DesignedForm(forms.Form):
                 def_field.initial = initial_data.get(def_field.name)
             else:
                 def_field.initial = initial_data.getlist(def_field.name)
-        self.fields[def_field.name] = get_class(def_field.field_class)(**def_field.get_form_field_init_args())
+        form_field = get_class(def_field.field_class)(**def_field.get_form_field_init_args())
+        if settings.USE_LABEL_AS_PLACEHOLDER:
+            form_field.widget.attrs.update({'placeholder': def_field.label})
+        self.fields[def_field.name] = form_field
 
 
 class FormDefinitionFieldInlineForm(forms.ModelForm):
